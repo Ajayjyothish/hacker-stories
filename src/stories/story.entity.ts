@@ -19,4 +19,7 @@ export class Story {
 
   @Column()
   time: number;
+
+  @Column({ default: false, name: 'is_displayed' })
+  isDisplayed: boolean;
 }
