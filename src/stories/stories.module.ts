@@ -4,6 +4,7 @@ import { StoriesService } from './stories.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Story } from './story.entity';
 import { CacheModule } from '@nestjs/cache-manager';
+import { StoriesRepository } from './stories.repository';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { CacheModule } from '@nestjs/cache-manager';
     CacheModule.register({ ttl: 15 * 60000 }),
   ],
   controllers: [StoriesController],
-  providers: [StoriesService],
+  providers: [StoriesService, StoriesRepository],
 })
 export class StoriesModule {}

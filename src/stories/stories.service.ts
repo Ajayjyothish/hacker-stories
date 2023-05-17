@@ -6,11 +6,12 @@ import { Story } from './story.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { StoryResponse } from 'src/types';
+import { StoriesRepository } from './stories.repository';
 
 @Injectable()
 export class StoriesService {
   constructor(
-    @InjectRepository(Story) private storyRepository: Repository<Story>,
+    @InjectRepository(Story) private storyRepository: StoriesRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -22,15 +23,17 @@ export class StoriesService {
     }
 
     const storiesEntityList: Story[] = [];
-    const response = await axios.get<number[]>(
-      'https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty',
-    );
+    const response = await this.getTopStoriesIdList();
+    console.log(response);
 
-    for (const storyId of response.data.slice(0, 10)) {
-      const response = await axios.get<StoryResponse>(
-        `https://hacker-news.firebaseio.com/v0/item/${storyId}.json?print=pretty`,
-      );
-      storiesEntityList.push(this.createStoryEntity(response.data));
+    for (const storyId of response) {
+      const response = await this.getStoryByStoryId(storyId);
+
+      if (response.type === 'story' && response.url) {
+        console.log(response);
+        storiesEntityList.push(this.createStoryEntity(response));
+      }
+      if (storiesEntityList.length === 10) break;
     }
 
     this.saveAsPastStoriesToCache(); //save existing top stories to cache to display as past stories
@@ -69,6 +72,19 @@ export class StoriesService {
       url: story.url,
       isDisplayed: true,
     };
+  }
+  async getTopStoriesIdList() {
+    const response = await axios.get<number[]>(
+      'https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty',
+    );
+    return response.data;
+  }
+
+  async getStoryByStoryId(storyId: number) {
+    const response = await axios.get(
+      `https://hacker-news.firebaseio.com/v0/item/${storyId}.json?print=pretty`,
+    );
+    return response.data;
   }
 
   private async getDbStoriesOrderBy(order: 'asc' | 'desc'): Promise<Story[]> {

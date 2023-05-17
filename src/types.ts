@@ -10,6 +10,7 @@ export type StoryResponse = {
   score: number;
   title: string;
   url: string;
+  type: string;
   time: number;
   kids: number[];
 };
