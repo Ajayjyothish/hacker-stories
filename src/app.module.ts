@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { StoriesModule } from './stories/stories.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { CommentsModule } from './comments/comments.module';
 @Module({
   imports: [
     StoriesModule,
@@ -17,6 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
