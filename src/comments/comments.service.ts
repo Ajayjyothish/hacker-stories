@@ -2,22 +2,14 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { CommentResponse, StoryResponse } from 'src/types';
 import { Comment } from './comment.model';
+import { BASE_URL } from '../constants';
 
 @Injectable()
 export class CommentsService {
-  async getCommentsById(id: string): Promise<Comment[]> {
+  async getCommentsById(id: number): Promise<Comment[]> {
     const commentsArray: Comment[] = [];
 
-    const response = await axios.get<StoryResponse>(
-      `https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`,
-    );
-
-    for (const commentId of response.data.kids.slice(0, 10)) {
-      const response = await axios.get<CommentResponse>(
-        `https://hacker-news.firebaseio.com/v0/item/${commentId}.json?print=pretty`,
-      );
-      commentsArray.push(this.createCommentModel(response.data));
-    }
+    commentsArray.push(...(await this.getComments(id)));
 
     commentsArray.sort(
       (a, b) => b.numberOfChildComments - a.numberOfChildComments,
@@ -31,5 +23,30 @@ export class CommentsService {
       text: comment.text,
       numberOfChildComments: comment.kids ? comment.kids.length : 0,
     };
+  }
+
+  private async getComments(id: number): Promise<Comment[]> {
+    const commentsList: Comment[] = [];
+    const response = await this.getStoryById(id);
+    for (const commentId of response.kids.slice(0, 10)) {
+      const response = await this.getCommentsFromStoryKids(commentId);
+      console.log(response);
+      commentsList.push(this.createCommentModel(response));
+    }
+    return commentsList;
+  }
+
+  async getStoryById(id: number) {
+    const response = await axios.get<StoryResponse>(
+      `${BASE_URL}item/${id}.json?print=pretty`,
+    );
+    return response.data;
+  }
+
+  async getCommentsFromStoryKids(commentId: number) {
+    const response = await axios.get<CommentResponse>(
+      `${BASE_URL}item/${commentId}.json?print=pretty`,
+    );
+    return response.data;
   }
 }

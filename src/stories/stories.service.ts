@@ -7,6 +7,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { StoryResponse } from 'src/types';
 import { StoriesRepository } from './stories.repository';
+import { BASE_URL } from '../constants';
 
 @Injectable()
 export class StoriesService {
@@ -24,13 +25,11 @@ export class StoriesService {
 
     const storiesEntityList: Story[] = [];
     const response = await this.getTopStoriesIdList();
-    console.log(response);
 
     for (const storyId of response) {
       const response = await this.getStoryByStoryId(storyId);
 
       if (response.type === 'story' && response.url) {
-        console.log(response);
         storiesEntityList.push(this.createStoryEntity(response));
       }
       if (storiesEntityList.length === 10) break;
@@ -75,14 +74,14 @@ export class StoriesService {
   }
   async getTopStoriesIdList() {
     const response = await axios.get<number[]>(
-      'https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty',
+      `${BASE_URL}topstories.json?print=pretty`,
     );
     return response.data;
   }
 
   async getStoryByStoryId(storyId: number) {
     const response = await axios.get(
-      `https://hacker-news.firebaseio.com/v0/item/${storyId}.json?print=pretty`,
+      `${BASE_URL}item/${storyId}.json?print=pretty`,
     );
     return response.data;
   }

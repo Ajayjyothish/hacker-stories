@@ -1,0 +1,34 @@
+version: '3.5'
+
+services:
+  hacker-stories:
+    image: node:19-alpine
+    working_dir: /hacker-stories
+    ports:
+      - 3000:3000
+    container_name: hacker_stories_app
+    restart: unless-stopped
+    depends_on:
+      pgsql-service:
+        condition: service_healthy
+    volumes:
+      - .:/hacker-stories
+    command: sh -c "while true; do sleep 1; done"
+    healthcheck:
+      interval: 2s
+      timeout: 150s
+      retries: 10
+
+  pgsql-service:
+    image: postgres
+    container_name: postgresql
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hacker-stories
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 3

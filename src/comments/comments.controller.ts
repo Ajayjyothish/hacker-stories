@@ -6,7 +6,7 @@ import { Comment } from './comment.model';
 export class CommentsController {
   constructor(private commentsService: CommentsService) {}
   @Get('/:id')
-  async getCommentsByStoryId(@Param('id') id: string): Promise<Comment[]> {
+  async getCommentsByStoryId(@Param('id') id: number): Promise<Comment[]> {
     return await this.commentsService.getCommentsById(id);
   }
 }

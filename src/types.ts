@@ -1,7 +1,11 @@
 export type CommentResponse = {
+  id: number;
+  parent: number;
+  time: number;
   by: string;
+  type: string;
   text: string;
-  kids: number[];
+  kids?: number[];
 };
 
 export type StoryResponse = {
