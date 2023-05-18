@@ -20,7 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docker:start": "docker-compose -f docker-compose.yml up -d",
     "docker:stop": "docker-compose -f docker-compose.yml  down",
-    "docker:start:dev": "docker exec -it hacker_stories_app npm run start:dev"
+    "docker:start:dev": "docker exec -it hacker_stories_app npm run start:dev",
+    "docker:test": "docker exec -it hacker_stories_app npm run test"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^1.0.0",
