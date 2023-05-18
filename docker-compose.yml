@@ -12,6 +12,7 @@ services:
     depends_on:
       pgsql-service:
         condition: service_healthy
+    command: sh -c "while true; do sleep 1; done"
     healthcheck:
       interval: 2s
       timeout: 150s
