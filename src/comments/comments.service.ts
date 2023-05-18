@@ -30,7 +30,6 @@ export class CommentsService {
     const response = await this.getStoryById(id);
     for (const commentId of response.kids.slice(0, 10)) {
       const response = await this.getCommentsFromStoryKids(commentId);
-      console.log(response);
       commentsList.push(this.createCommentModel(response));
     }
     return commentsList;

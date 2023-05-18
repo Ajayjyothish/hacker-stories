@@ -2,8 +2,9 @@ version: '3.5'
 
 services:
   hacker-stories:
-    image: node:19-alpine
-    working_dir: /hacker-stories
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - 3000:3000
     container_name: hacker_stories_app
@@ -11,9 +12,6 @@ services:
     depends_on:
       pgsql-service:
         condition: service_healthy
-    volumes:
-      - .:/hacker-stories
-    command: sh -c "while true; do sleep 1; done"
     healthcheck:
       interval: 2s
       timeout: 150s
